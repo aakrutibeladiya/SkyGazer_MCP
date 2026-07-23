@@ -6,7 +6,7 @@ Phased checklist. Work top to bottom — each phase should leave you with someth
 
 - [x] git init
 - [x] README.md, CLAUDE.md, TODO.md, LEARNINGS.md
-- [ ] Get a NASA API key from <https://api.nasa.gov/> (free, instant, email delivery) — `DEMO_KEY` works meanwhile but caps at 30 req/hr, 50/day
+- [x] Get a NASA API key from <https://api.nasa.gov/> (free, instant, email delivery) — `DEMO_KEY` works meanwhile but caps at 30 req/hr, 50/day
 - [ ] `.gitignore` + `.env.example`
 
 ## Phase 1 — Project scaffold
@@ -18,16 +18,21 @@ Phased checklist. Work top to bottom — each phase should leave you with someth
 
 ## Phase 2 — First real tool: APOD (Astronomy Picture of the Day)
 
-- [ ] `src/nasa-client.ts`: fetch wrapper (base URL `https://api.nasa.gov`, injects `api_key`, throws normalized errors on non-2xx)
-- [ ] `src/tools/apod.ts`: tool with optional `date` param (Zod schema), calls `/planetary/apod`
-- [ ] Return image as MCP image content block, not just a URL string — this is the "image content-type handling" learning goal
-- [ ] Test via Inspector: call with and without `date`, confirm schema validation rejects bad dates
+- [x] `src/nasa-client.ts`: fetch wrapper (base URL `https://api.nasa.gov`, injects `api_key`, throws normalized errors on non-2xx)
+- [x] `src/tools/apod.ts`: tool with optional `date` param (Zod schema), calls `/planetary/apod`
+- [x] Return image as MCP image content block, not just a URL string — this is the "image content-type handling" learning goal (also added an optional `hd` param to choose regular vs HD image)
+- [x] Test: called via a scripted MCP `Client`/`StdioClientTransport` (no args, bad date, valid past date + hd) — confirmed schema validation rejects bad dates and image content returns correctly
 
-## Phase 3 — Mars Rover Photos
+## Phase 3 — NeoWs (Near Earth Object Web Service)
 
-- [ ] `src/tools/mars-rover-photos.ts`: params for rover name (enum: curiosity/opportunity/spirit/perseverance), sol or earth_date, camera (optional)
-- [ ] Handle pagination / large result sets sensibly (NASA returns all matches — decide: truncate + note count, or paginate client-side)
-- [ ] Test edge cases: invalid rover name, no photos for that sol/date
+Originally planned as Mars Rover Photos, but that endpoint's upstream backend (Heroku-hosted, unmaintained) is currently returning "No such app" for every request — see LEARNINGS.md. Swapped in NeoWs instead: still `api.nasa.gov`, still teaches date-based query params (this time a *range*, not a single date), and stays thematically close to the asteroid trio in Phase 6.
+
+- [x] `src/tools/neows.ts`: `start_date`/`end_date` params (both optional, YYYY-MM-DD), calls `/neo/rest/v1/feed`
+- [x] Client-side check that the range is ≤ 7 days (NASA rejects wider ranges) — validated without hitting the network
+- [x] Truncate to first 30 results across the range + report total count (same truncate-and-note-count pattern as the original Mars Rover plan)
+- [x] Test: schema rejects malformed dates, range check rejects >7 days, and a real request correctly surfaced a `429` through `nasa-client.ts`'s error normalization (DEMO_KEY was rate-limited during testing)
+- [x] Re-verify the happy path (actual asteroid data, not just error handling) once a personal `NASA_API_KEY` is set or DEMO_KEY quota resets — confirmed working once `.env` loading was fixed (see LEARNINGS.md)
+- [ ] Revisit Mars Rover Photos later as a stretch goal if NASA's endpoint comes back online
 
 ## Phase 4 — Add a resource
 
@@ -65,6 +70,7 @@ Different API family from `api.nasa.gov` — base `ssd-api.jpl.nasa.gov`, no API
 - [ ] README usage examples with real output
 - [ ] Basic caching (APOD doesn't change more than once/day)
 - [ ] Consider publishing to npm / listing in an MCP server registry
+- [ ] Revisit Mars Rover Photos truncation from Phase 3 — real client-side pagination (a `page`/`offset` param) if truncating to ~20 turns out to hide results users actually wanted
 
 ---
 
