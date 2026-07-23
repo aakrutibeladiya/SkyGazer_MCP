@@ -13,18 +13,22 @@ Running notes on things worth remembering later. Add an entry whenever something
 
 ## NASA API notes
 
-_(fill in as Phase 2+ progresses — e.g., DEMO_KEY limits, quirks in APOD/Mars Rover Photos response shapes, date format gotchas)_
+- There are (at least) two separate NASA API families: `api.nasa.gov` (APOD, Mars Rover Photos, NeoWs, EPIC, DONKI — needs an API key) and JPL's **SSD/CNEOS API** (`ssd-api.jpl.nasa.gov` — Close Approach Data, Small-Body Database, Sentry, Fireball, NHATS — no key needed). Different base URLs, different fair-use rules; don't assume one client config covers both.
+- SSD API fair-use rule that actually affects code: **no simultaneous requests** — any client for this API must serialize calls (no `Promise.all` fan-out), not just rate-limit them. Its "no embedding in a website" / CORS rule doesn't apply to a server-side MCP server — that's a browser-only restriction.
+- SSD API responses include a `version` field specifically because formats can change without notice — worth checking it against an expected value and warning on mismatch rather than assuming the shape.
+
+*(fill in more as Phase 2+ progresses — e.g., DEMO_KEY limits, quirks in APOD/Mars Rover Photos response shapes, date format gotchas)*
 
 ## MCP SDK / TypeScript gotchas
 
-_(fill in as encountered)_
+*(fill in as encountered)*
 
 ## Debugging notes
 
-_(fill in — anything that took real time to diagnose, so future-you doesn't re-diagnose it)_
+*(fill in — anything that took real time to diagnose, so future-you doesn't re-diagnose it)*
 
 ## Useful links
 
-- MCP spec / docs: https://modelcontextprotocol.io
-- NASA API portal (get a key, browse all endpoints): https://api.nasa.gov/
+- MCP spec / docs: <https://modelcontextprotocol.io>
+- NASA API portal (get a key, browse all endpoints): <https://api.nasa.gov/>
 - MCP Inspector (manual testing tool): `npx @modelcontextprotocol/inspector`

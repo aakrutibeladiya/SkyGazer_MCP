@@ -32,7 +32,19 @@ Phased checklist. Work top to bottom — each phase should leave you with someth
 - [ ] Normalize NASA API error responses into meaningful MCP tool errors
 - [ ] Handle 429 (rate limit) explicitly — surface a clear message pointing at swapping DEMO_KEY for a real key
 
-## Phase 6 — More endpoints (pick 1-2)
+## Phase 6 — JPL SSD/CNEOS API tools (asteroid trio)
+
+Different API family from `api.nasa.gov` — base `ssd-api.jpl.nasa.gov`, no API key needed, but requests must be serialized (see LEARNINGS.md). Needs its own `src/ssd-client.ts` rather than reusing `nasa-client.ts`.
+
+- [ ] `src/ssd-client.ts`: fetch wrapper for `ssd-api.jpl.nasa.gov`, no key injection, serializes calls (simple queue/mutex — no concurrent requests per fair-use policy), checks response `version` field and warns on mismatch
+- [ ] `src/tools/sbdb.ts` — **SBDB**: look up an asteroid/comet by name/designation, return orbital elements + physical data ("tell me about asteroid Apophis")
+- [ ] `src/tools/close-approach.ts` — **SB Close Approach (CAD)**: asteroids/comets passing close to Earth in a date range + min distance ("what's approaching Earth this month?")
+- [ ] `src/tools/sentry.ts` — **Sentry**: Earth impact risk assessment data ("is this asteroid a risk?")
+- [ ] Demo: chain the three in one natural-language prompt against the running server ("is there anything dangerous approaching Earth right now?")
+- [ ] Stretch (optional, later): Fireball (real meteor impact events, simple date-range query)
+
+## Phase 6b — More `api.nasa.gov` endpoints (optional, pick 1-2 if time allows)
+
 - [ ] NeoWs (Near Earth Object Web Service) — asteroid data, teaches date-range query params
 - [ ] EPIC (Earth imagery)
 - [ ] DONKI (space weather events)
