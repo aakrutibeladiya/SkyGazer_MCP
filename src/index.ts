@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { registerApodTool } from "./tools/apod.js";
@@ -11,7 +12,7 @@ import { registerStargazingTool } from "./tools/stargazing.js";
 import { registerGeomagneticStormsTool } from "./tools/geomagnetic-storms.js";
 
 const server = new McpServer({
-  name: "mcp-nasa",
+  name: "skygazer-mcp",
   version: "1.0.0",
 });
 

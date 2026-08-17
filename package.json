@@ -1,17 +1,42 @@
 {
-  "name": "mcp-nasa",
+  "name": "skygazer-mcp",
   "version": "1.0.0",
-  "description": "A Model Context Protocol (MCP) server that wraps NASA's public APIs (APOD, Mars Rover Photos, NeoWs, EPIC, DONKI) so an MCP client (Claude Desktop, Claude Code, etc.) can query space data as tools/resources.",
+  "description": "A Model Context Protocol (MCP) server for space data and stargazing planning: NASA APOD, near-Earth objects, geomagnetic storms/aurora forecasts, JPL asteroid/comet lookups and close approaches, moon phase, and naked-eye planet visibility.",
   "main": "dist/index.js",
+  "bin": {
+    "skygazer-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node --env-file=.env dist/index.js",
     "dev": "tsx --env-file=.env src/index.ts",
     "inspect": "npx @modelcontextprotocol/inspector tsx --env-file=.env src/index.ts"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "nasa",
+    "space",
+    "astronomy",
+    "stargazing",
+    "asteroid",
+    "claude"
+  ],
+  "author": "aakrutibeladiya <aakrutibeladiya0@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aakrutibeladiya/NASA-MCP.git"
+  },
+  "homepage": "https://github.com/aakrutibeladiya/NASA-MCP#readme",
+  "bugs": {
+    "url": "https://github.com/aakrutibeladiya/NASA-MCP/issues"
+  },
   "type": "module",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",

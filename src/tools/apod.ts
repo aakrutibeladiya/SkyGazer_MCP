@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { nasaGet, fetchAsBase64 } from "../nasa-client.js";
+import { cached } from "../lib/cache.js";
 
 const apodInputShape = {
   date: z
@@ -34,26 +35,34 @@ export function registerApodTool(server: McpServer): void {
       inputSchema: apodInputShape,
     },
     async ({ date, hd }) => {
-      const apod = await nasaGet<ApodResponse>("/planetary/apod", { date });
+      // Resolve "today" to a concrete calendar day before using it as a cache
+      // key — caching under a literal "today" string would keep serving
+      // yesterday's picture after the date rolls over on a long-lived server.
+      const resolvedDate = date ?? new Date().toISOString().slice(0, 10);
+      const cacheKey = `apod:${resolvedDate}:${hd ?? false}`;
 
-      const textParts = [`# ${apod.title}`, `Date: ${apod.date}`];
-      if (apod.copyright) textParts.push(`Copyright: ${apod.copyright}`);
-      textParts.push("", apod.explanation);
+      return cached(cacheKey, async () => {
+        const apod = await nasaGet<ApodResponse>("/planetary/apod", { date });
 
-      if (apod.media_type !== "image") {
-        textParts.push("", `No image today — media is a video: ${apod.url}`);
-        return { content: [{ type: "text", text: textParts.join("\n") }] };
-      }
+        const textParts = [`# ${apod.title}`, `Date: ${apod.date}`];
+        if (apod.copyright) textParts.push(`Copyright: ${apod.copyright}`);
+        textParts.push("", apod.explanation);
 
-      const imageUrl = hd && apod.hdurl ? apod.hdurl : apod.url;
-      const { data, mimeType } = await fetchAsBase64(imageUrl);
+        if (apod.media_type !== "image") {
+          textParts.push("", `No image today — media is a video: ${apod.url}`);
+          return { content: [{ type: "text", text: textParts.join("\n") }] };
+        }
 
-      return {
-        content: [
-          { type: "text", text: textParts.join("\n") },
-          { type: "image", data, mimeType },
-        ],
-      };
+        const imageUrl = hd && apod.hdurl ? apod.hdurl : apod.url;
+        const { data, mimeType } = await fetchAsBase64(imageUrl);
+
+        return {
+          content: [
+            { type: "text", text: textParts.join("\n") },
+            { type: "image", data, mimeType },
+          ],
+        };
+      });
     },
   );
 }
