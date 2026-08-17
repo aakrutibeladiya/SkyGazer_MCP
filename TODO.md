@@ -7,7 +7,7 @@ Phased checklist. Work top to bottom — each phase should leave you with someth
 - [x] git init
 - [x] README.md, CLAUDE.md, TODO.md, LEARNINGS.md
 - [x] Get a NASA API key from <https://api.nasa.gov/> (free, instant, email delivery) — `DEMO_KEY` works meanwhile but caps at 30 req/hr, 50/day
-- [ ] `.gitignore` + `.env.example`
+- [x] `.gitignore` + `.env.example`
 
 ## Phase 1 — Project scaffold
 
@@ -86,7 +86,6 @@ Back on `api.nasa.gov` (reuses `nasa-client.ts` as-is). Extends the stargazing f
 
 ## Phase 6b — More `api.nasa.gov` endpoints (optional, pick 1-2 if time allows)
 
-- [ ] NeoWs (Near Earth Object Web Service) — asteroid data, teaches date-range query params
 - [ ] EPIC (Earth imagery)
 
 ## Phase 7 — Real client testing
@@ -97,9 +96,10 @@ Back on `api.nasa.gov` (reuses `nasa-client.ts` as-is). Extends the stargazing f
 ## Phase 8 — Polish (stretch)
 
 - [x] README usage examples with real output — rewrote README.md: tool/resource tables, updated project structure (all 4 API-family client files + `lib/`), Claude Code + Claude Desktop wiring snippets
-- [ ] Basic caching (APOD doesn't change more than once/day)
+- [x] Basic caching (APOD doesn't change more than once/day) — `src/lib/cache.ts`, memoized per resolved date + `hd` flag in `apod.ts`
 - [ ] Consider publishing to npm / listing in an MCP server registry
-- [ ] Revisit Mars Rover Photos truncation from Phase 3 — real client-side pagination (a `page`/`offset` param) if truncating to ~20 turns out to hide results users actually wanted
+
+- [ ] Revisit Mars Rover Photos truncation from Phase 3 — real client-side pagination (a `page`/`offset` param) if truncating to ~20 turns out to hide results users actually wanted — **blocked**: no Mars Rover Photos tool exists yet (Phase 3 swapped to NeoWs), and the upstream proxy still 404s "No such app" as of 2026-08-17; can't start until the endpoint is back and the tool actually exists
 
 ---
 

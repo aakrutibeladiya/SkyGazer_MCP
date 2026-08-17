@@ -1,8 +1,8 @@
-# MCP NASA
+# SkyGazer MCP
 
-A Model Context Protocol (MCP) server that wraps NASA's public APIs — and a couple of adjacent JPL/NASA-center APIs — so an MCP client (Claude Desktop, Claude Code, etc.) can query space data as tools/resources.
+A Model Context Protocol (MCP) server for planning a night of stargazing: is tonight good for it, what's visible, and what's happening in the sky worth going outside for. Built on NASA and JPL data (APOD, NeoWs, DONKI, JPL SSD, JPL Horizons, SVS), not just a wrapper around one API — the flagship tools cross-reference moon illumination, planet ephemeris, and geomagnetic activity into a plain-language answer instead of relaying a single endpoint's raw JSON.
 
-Built primarily as a learning project: nail MCP protocol mechanics (tools, resources, schemas, error handling, image content) on free, key-friendly APIs before moving on to harder auth/side-effect patterns (OAuth, Stripe, Linear, etc.).
+There are other NASA MCP servers with broader endpoint coverage (Mars rover photos, EPIC Earth imagery, EONET, etc.) — this one trades that breadth for depth on one concrete use case: "is tonight worth going outside for?"
 
 ## Status
 
@@ -75,7 +75,7 @@ Or run a quick scripted check with `tsx` + the MCP `Client`/`StdioClientTranspor
 **Claude Code:**
 
 ```bash
-claude mcp add mcp-nasa -- node --env-file=/absolute/path/to/MCP-NASA/.env /absolute/path/to/MCP-NASA/dist/index.js
+claude mcp add skygazer-mcp -- node --env-file=/absolute/path/to/MCP-NASA/.env /absolute/path/to/MCP-NASA/dist/index.js
 ```
 
 **Claude Desktop:** add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
@@ -83,7 +83,7 @@ claude mcp add mcp-nasa -- node --env-file=/absolute/path/to/MCP-NASA/.env /abso
 ```json
 {
   "mcpServers": {
-    "mcp-nasa": {
+    "skygazer-mcp": {
       "command": "node",
       "args": [
         "--env-file=/absolute/path/to/MCP-NASA/.env",
