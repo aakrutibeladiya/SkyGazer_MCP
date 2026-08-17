@@ -96,7 +96,7 @@ Back on `api.nasa.gov` (reuses `nasa-client.ts` as-is). Extends the stargazing f
 
 ## Phase 8 — Polish (stretch)
 
-- [ ] README usage examples with real output
+- [x] README usage examples with real output — rewrote README.md: tool/resource tables, updated project structure (all 4 API-family client files + `lib/`), Claude Code + Claude Desktop wiring snippets
 - [ ] Basic caching (APOD doesn't change more than once/day)
 - [ ] Consider publishing to npm / listing in an MCP server registry
 - [ ] Revisit Mars Rover Photos truncation from Phase 3 — real client-side pagination (a `page`/`offset` param) if truncating to ~20 turns out to hide results users actually wanted
