@@ -10,6 +10,32 @@ export class NasaApiError extends Error {
   }
 }
 
+function usingDemoKey(): boolean {
+  return !process.env.NASA_API_KEY;
+}
+
+/** Reads the error body (if any) and throws a NasaApiError with a message tailored to the status. */
+async function throwNormalized(res: Response): Promise<never> {
+  const body = await res.json().catch(() => undefined);
+  const upstreamMessage = body?.error?.message ?? body?.msg;
+
+  if (res.status === 429) {
+    const hint = usingDemoKey()
+      ? "You're using the shared DEMO_KEY, which is rate-limited across every anonymous NASA API user (30 req/hr, 50/day) and can be exhausted by other people's traffic, not just yours. Get a free personal key at https://api.nasa.gov/ and set it as NASA_API_KEY."
+      : "Your personal NASA_API_KEY has hit its rate limit (1000 req/hr). Wait for the limit to reset before retrying.";
+    throw new NasaApiError(429, `NASA API rate limit exceeded. ${hint}`);
+  }
+
+  if (res.status === 403) {
+    throw new NasaApiError(
+      403,
+      `NASA API rejected the request as forbidden — check that NASA_API_KEY is set to a valid key (${upstreamMessage ?? res.statusText}).`,
+    );
+  }
+
+  throw new NasaApiError(res.status, `NASA API ${res.status}: ${upstreamMessage ?? res.statusText}`);
+}
+
 /**
  * Calls an api.nasa.gov endpoint, injecting the API key and normalizing errors.
  * `path` is like "/planetary/apod"; `params` are additional query params.
@@ -24,11 +50,17 @@ export async function nasaGet<T>(
     if (value !== undefined) url.searchParams.set(key, value);
   }
 
-  const res = await fetch(url);
+  let res: Response;
+  try {
+    res = await fetch(url);
+  } catch (err) {
+    throw new NasaApiError(
+      0,
+      `Network error calling NASA API: ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
   if (!res.ok) {
-    const body = await res.json().catch(() => undefined);
-    const message = body?.error?.message ?? body?.msg ?? res.statusText;
-    throw new NasaApiError(res.status, `NASA API ${res.status}: ${message}`);
+    await throwNormalized(res);
   }
   return res.json() as Promise<T>;
 }
@@ -37,7 +69,15 @@ export async function nasaGet<T>(
 export async function fetchAsBase64(
   url: string,
 ): Promise<{ data: string; mimeType: string }> {
-  const res = await fetch(url);
+  let res: Response;
+  try {
+    res = await fetch(url);
+  } catch (err) {
+    throw new NasaApiError(
+      0,
+      `Network error fetching ${url}: ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
   if (!res.ok) {
     throw new NasaApiError(res.status, `Failed to fetch ${url}: ${res.statusText}`);
   }

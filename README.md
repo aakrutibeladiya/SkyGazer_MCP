@@ -43,4 +43,4 @@ Use the MCP Inspector to poke the server without needing a full client:
 npx @modelcontextprotocol/inspector node dist/index.js
 ```
 
-Or wire it into Claude Code / Claude Desktop's MCP config once it's functional enough to be worth it.
+
